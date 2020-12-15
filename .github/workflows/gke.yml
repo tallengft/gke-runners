@@ -1,0 +1,20 @@
+name: Build and Deploy to GKE Cluster
+on: [push]
+
+env:
+  PROJECT_ID: foo
+  CLUSTER_NAME: runner-cluster
+  GITHUB_TOKEN: foo
+  REPO_OWNER: foo
+  REPO_NAME: foo
+  REPO_URL: foo
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
