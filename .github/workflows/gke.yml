@@ -40,3 +40,6 @@ jobs:
         docker build  \
           --tag "gcr.io/$PROJECT_ID/$IMAGE:latest" \
           .
+
+    - name: Publish
+      run: docker push "gcr.io/$PROJECT_ID/$IMAGE:latest"
