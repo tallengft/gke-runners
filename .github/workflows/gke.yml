@@ -2,12 +2,11 @@ name: Build and Deploy to GKE Cluster
 on: [push]
 
 env:
-  PROJECT_ID: foo
-  CLUSTER_NAME: runner-cluster
-  GITHUB_TOKEN: foo
-  REPO_OWNER: foo
-  REPO_NAME: foo
-  REPO_URL: foo
+  PROJECT_ID: ${{ secrets.GKE_PROJECT_TF }}
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+  CLUSTER_ZONE: ${{ secrets.CLUSTER_ZONE }}
+  IMAGE: github-runner
+
 
 jobs:
   setup-build-publish-deploy:
@@ -25,3 +24,18 @@ jobs:
         version: '290.0.1'
         service_account_key: ${{ secrets.GKE_SA_KEY_TF }}
         project_id: ${{ secrets.GKE_PROJECT_TF }}
+
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - name: Configure Docker
+      run: gcloud --quiet auth configure-docker
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - name: Get the GKE credentials
+      run: gcloud container clusters get-credentials "$CLUSTER_NAME" --zone "$CLUSTER_ZONE"
+
+    # Build the Docker image
+    - name: Build
+      run: |-
+        docker build  \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:latest" 
